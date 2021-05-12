@@ -1,0 +1,12 @@
+body {
+    font-family: monospace;
+}
+.app {
+    padding: 1rem;
+    max-width: 40rem;
+    margin: 0 auto;
+}
+
+.app .header {
+    margin: 2rem 0;
+}

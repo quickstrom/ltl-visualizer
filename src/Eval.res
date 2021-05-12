@@ -10,3 +10,9 @@ let rec eval: (Formula.formula, Trace.trace) => bool = (f, trace) =>
   | (Next(p), list{_, ...rest}) => eval(p, rest)
   | (Next(_), list{}) => raise(EmptyTrace)
   }
+
+let rec evalAll: (Formula.formula, Trace.trace) => list<bool> = (f, t) =>
+  switch t {
+    | list{} => list{}
+    | list{_, ...rest} => list{eval(f, t), ...evalAll(f, rest)}
+  }
