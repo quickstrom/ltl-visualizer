@@ -3,6 +3,7 @@ module Syntax = {
   let \"and" = (p, q) => Formula.And(p, q)
   let or = (p, q) => Formula.Or(p, q)
   let next = p => Formula.Next(p)
+  let always = p => Formula.Always(p)
 }
 
 // Atomic propositions: A to Z

@@ -4,6 +4,7 @@ type rec formula =
   | And(formula, formula)
   | Or(formula, formula)
   | Next(formula)
+  | Always(formula)
 
 let rec print_formula: formula => string = f =>
   switch f {
@@ -12,6 +13,7 @@ let rec print_formula: formula => string = f =>
   | And(p, q) => "and(" ++ print_formula(p) ++ ", " ++ print_formula(q) ++ ")"
   | Or(p, q) => "or(" ++ print_formula(p) ++ ", " ++ print_formula(q) ++ ")"
   | Next(p) => "next(" ++ print_formula(p) ++ ")"
+  | Always(p) => "always(" ++ print_formula(p) ++ ")"
   }
 
 module CharCmp = Belt.Id.MakeComparable({
@@ -31,6 +33,7 @@ let atomicNames: formula => names = f => {
     | And(p, q) => Belt.Set.union(go(names, p), go(names, q))
     | Or(p, q) => Belt.Set.union(go(names, p), go(names, q))
     | Next(p) => go(names, p)
+    | Always(p) => go(names, p)
     }
   go(emptyNames, f)
 }

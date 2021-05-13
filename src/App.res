@@ -24,18 +24,19 @@ module TraceVisualizer = {
       <h2> {React.string("Atomic Propositions")} </h2>
       {React.array(
         Belt.Array.mapWithIndex(Belt.Set.toArray(allNames), (i, name) =>
-          <div key={string_of_int(i)}>
-            <p> {React.string(String.make(1, name))} </p>
+          <p key={string_of_int(i)}>
+            <code className="formula"> {React.string(String.make(1, name))} </code>
             <TraceStates formula=Formula.Atomic(name) trace />
-          </div>
+          </p>
         ),
       )}
       <h2> {React.string("Formulae")} </h2>
       {React.array(
         Belt.Array.mapWithIndex(formulae, (i, formula) =>
-          <div key={string_of_int(i)}>
-            {React.string(Formula.print_formula(formula))} <TraceStates formula trace />
-          </div>
+          <p key={string_of_int(i)}>
+            <code className="formula"> {React.string(Formula.print_formula(formula))} </code>
+            <TraceStates formula trace />
+          </p>
         ),
       )}
     </div>
@@ -48,7 +49,7 @@ module App = {
     <div className="app">
       <header className="header">
         <h1> {React.string("Linear Temporal Logic Visualizer")} </h1>
-        <TraceVisualizer trace=Demo.trace formulae=[Demo.formula1, Demo.formula2] />
+        <TraceVisualizer trace=Demo.trace formulae=Demo.formulae />
       </header>
     </div>
   }

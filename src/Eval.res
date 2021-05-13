@@ -19,7 +19,7 @@ module Residual = {
     }
 }
 
-module Result = {
+module Value = {
   type t =
     | Residual(Residual.t)
     | Pure(bool)
@@ -31,7 +31,7 @@ module Result = {
     }
 }
 
-let evalAnd: (Result.t, Result.t) => Result.t = (p, q) =>
+let evalAnd: (Value.t, Value.t) => Value.t = (p, q) =>
   switch (p, q) {
   | (Pure(true), p) => p
   | (p, Pure(true)) => p
@@ -40,7 +40,7 @@ let evalAnd: (Result.t, Result.t) => Result.t = (p, q) =>
   | (Residual(r1), Residual(r2)) => Residual(Conjunction(r1, r2))
   }
 
-let evalOr: (Result.t, Result.t) => Result.t = (p, q) =>
+let evalOr: (Value.t, Value.t) => Value.t = (p, q) =>
   switch (p, q) {
   | (Pure(true), _) => Pure(true)
   | (_, Pure(true)) => Pure(true)
@@ -49,20 +49,26 @@ let evalOr: (Result.t, Result.t) => Result.t = (p, q) =>
   | (Residual(r1), Residual(r2)) => Residual(Disjunction(r1, r2))
   }
 
-let rec eval: (Formula.formula, Trace.state) => Result.t = (f, state) =>
+let rec eval: (Formula.formula, Trace.state) => Value.t = (f, state) =>
   switch f {
   | Atomic(c) => Pure(state->Belt.Set.has(c))
-  | Not(p) => Result.negate(eval(p, state))
+  | Not(p) => Value.negate(eval(p, state))
   | And(p, q) => evalAnd(eval(p, state), eval(q, state))
   | Or(p, q) => evalOr(eval(p, state), eval(q, state))
   | Next(p) => Residual(Next(p, Demand))
+  | Always(p) =>
+    switch eval(p, state) {
+    | Pure(false) => Pure(false)
+    | Pure(true) => Residual(Next(Always(p), True))
+    | Residual(r) => Residual(Conjunction(r, Next(Always(p), True)))
+    }
   }
 
 let map2: (('a, 'b) => 'c, option<'a>, option<'b>) => option<'c> = (f, oa, ob) =>
   Belt.Option.flatMap(oa, a => Belt.Option.map(ob, b => f(a, b)))
 
 module EvalTrace = {
-  let rec step: (Residual.t, Trace.state) => Result.t = (r, state) =>
+  let rec step: (Residual.t, Trace.state) => Value.t = (r, state) =>
     switch r {
     | Conjunction(r1, r2) => evalAnd(step(r1, state), step(r2, state))
     | Disjunction(r1, r2) => evalOr(step(r1, state), step(r2, state))
@@ -78,7 +84,7 @@ module EvalTrace = {
     | Next(_, Demand) => None
     }
 
-  let rec loopLast: (Result.t, Trace.state) => bool = (value, last) =>
+  let rec loopLast: (Value.t, Trace.state) => bool = (value, last) =>
     switch value {
     | Pure(r) => r
     | Residual(r) =>
@@ -88,18 +94,14 @@ module EvalTrace = {
       }
     }
 
-  let rec stepStates: (Result.t, Trace.trace) => bool = (value, trace) =>
+  let rec stepStates: (Value.t, Trace.trace) => bool = (value, trace) =>
     switch trace {
     | list{} => raise(EmptyTrace)
     | list{last} => loopLast(value, last)
     | list{current, ...rest} =>
       switch value {
       | Pure(r) => r
-      | Residual(r) =>
-        switch stop(r) {
-        | Some(result) => result
-        | None => stepStates(step(r, current), rest)
-        }
+      | Residual(r) => stepStates(step(r, current), rest)
       }
     }
 
