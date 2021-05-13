@@ -1,2 +1,3 @@
-let formula = Parser.parse("and(next(A), or(B, C))")
-let trace = list{Trace.state_of(['B']), Trace.state_of(['A', 'B']), Trace.state_of(['C'])}
+let formula1 = Parser.parse("or(A, and(B, next(C)))")
+let formula2 = Parser.parse("and(A, next(B))")
+let trace = list{Trace.state_of(['A']), Trace.state_of(['B', 'C']), Trace.state_of(['A'])}

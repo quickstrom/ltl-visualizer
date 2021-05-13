@@ -10,3 +10,9 @@ body {
 .app .header {
     margin: 2rem 0;
 }
+
+.states {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+}
