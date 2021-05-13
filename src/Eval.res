@@ -62,6 +62,17 @@ let rec eval: (Formula.formula, Trace.state) => Value.t = (f, state) =>
     | Pure(true) => Residual(Next(Always(p), True))
     | Residual(r) => Residual(Conjunction(r, Next(Always(p), True)))
     }
+  | Until(p, q) => {
+      let cont: Residual.t = Next(Until(p, q), False)
+      switch (eval(p, state), eval(q, state)) {
+      | (_, Pure(true)) => Pure(true)
+      | (Pure(true), Pure(false)) => Residual(cont)
+      | (Pure(false), q') => q'
+      | (Residual(r), Pure(false)) => Residual(Conjunction(r, cont))
+      | (Residual(pr), Residual(qr)) => Residual(Disjunction(qr, Conjunction(pr, cont)))
+      | (Pure(true), Residual(qr)) => Residual(Disjunction(qr, cont))
+      }
+    }
   }
 
 let map2: (('a, 'b) => 'c, option<'a>, option<'b>) => option<'c> = (f, oa, ob) =>
@@ -97,7 +108,11 @@ module EvalTrace = {
   let rec stepStates: (Value.t, Trace.trace) => bool = (value, trace) =>
     switch trace {
     | list{} => raise(EmptyTrace)
-    | list{last} => loopLast(value, last)
+    | list{last} =>
+      switch value {
+      | Pure(r) => r
+      | Residual(r) => loopLast(step(r, last), last)
+      }
     | list{current, ...rest} =>
       switch value {
       | Pure(r) => r

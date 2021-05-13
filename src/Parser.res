@@ -4,6 +4,7 @@ module Syntax = {
   let or = (p, q) => Formula.Or(p, q)
   let next = p => Formula.Next(p)
   let always = p => Formula.Always(p)
+  let until = (p, q) => Formula.Until(p, q)
 }
 
 // Atomic propositions: A to Z
