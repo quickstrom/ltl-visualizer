@@ -1,37 +1,31 @@
 exception EmptyTrace
 
-module Residual = {
-  type strength =
-    | Demand
-    | True
-    | False
+type strength =
+  | True
+  | False
 
-  type rec t =
-    | Conjunction(t, t)
-    | Disjunction(t, t)
-    | Next(Formula.formula, strength)
+type rec value =
+  | Residual(residual)
+  | Pure(bool)
+and residual =
+  | Conjunction(residual, residual)
+  | Disjunction(residual, residual)
+  | Next(Formula.formula, value)
 
-  let rec negate: t => t = r =>
-    switch r {
-    | Conjunction(p, q) => Disjunction(negate(p), negate(q))
-    | Disjunction(p, q) => Conjunction(negate(p), negate(q))
-    | Next(f, r) => Next(Formula.Not(f), r)
-    }
-}
+let rec negateResidual: residual => residual = r =>
+  switch r {
+  | Conjunction(p, q) => Disjunction(negateResidual(p), negateResidual(q))
+  | Disjunction(p, q) => Conjunction(negateResidual(p), negateResidual(q))
+  | Next(f, r) => Next(Formula.Not(f), r)
+  }
 
-module Value = {
-  type t =
-    | Residual(Residual.t)
-    | Pure(bool)
+let negateValue: value => value = v =>
+  switch v {
+  | Residual(r) => Residual(negateResidual(r))
+  | Pure(v) => Pure(!v)
+  }
 
-  let negate: t => t = r =>
-    switch r {
-    | Residual(r) => Residual(Residual.negate(r))
-    | Pure(r) => Pure(!r)
-    }
-}
-
-let evalAnd: (Value.t, Value.t) => Value.t = (p, q) =>
+let evalAnd: (value, value) => value = (p, q) =>
   switch (p, q) {
   | (Pure(true), p) => p
   | (p, Pure(true)) => p
@@ -40,7 +34,7 @@ let evalAnd: (Value.t, Value.t) => Value.t = (p, q) =>
   | (Residual(r1), Residual(r2)) => Residual(Conjunction(r1, r2))
   }
 
-let evalOr: (Value.t, Value.t) => Value.t = (p, q) =>
+let evalOr: (value, value) => value = (p, q) =>
   switch (p, q) {
   | (Pure(true), _) => Pure(true)
   | (_, Pure(true)) => Pure(true)
@@ -49,21 +43,18 @@ let evalOr: (Value.t, Value.t) => Value.t = (p, q) =>
   | (Residual(r1), Residual(r2)) => Residual(Disjunction(r1, r2))
   }
 
-let rec eval: (Formula.formula, Trace.state) => Value.t = (f, state) =>
+let rec eval: (Formula.formula, Trace.state) => value = (f, state) =>
   switch f {
+  | Top => Pure(true)
+  | Bottom => Pure(true)
   | Atomic(c) => Pure(state->Belt.Set.has(c))
-  | Not(p) => Value.negate(eval(p, state))
+  | Not(p) => negateValue(eval(p, state))
   | And(p, q) => evalAnd(eval(p, state), eval(q, state))
   | Or(p, q) => evalOr(eval(p, state), eval(q, state))
-  | Next(p) => Residual(Next(p, Demand))
-  | Always(p) =>
-    switch eval(p, state) {
-    | Pure(false) => Pure(false)
-    | Pure(true) => Residual(Next(Always(p), True))
-    | Residual(r) => Residual(Conjunction(r, Next(Always(p), True)))
-    }
+  | Next(p) => Residual(Next(p, eval(p, state)))
+  | Always(p) => eval(Formula.Not(Formula.Until(Formula.Top, Formula.Not(p))), state)
   | Until(p, q) => {
-      let cont: Residual.t = Next(Until(p, q), False)
+      let cont: residual = Next(Until(p, q), eval(p, state))
       switch (eval(p, state), eval(q, state)) {
       | (_, Pure(true)) => Pure(true)
       | (Pure(true), Pure(false)) => Residual(cont)
@@ -79,23 +70,22 @@ let map2: (('a, 'b) => 'c, option<'a>, option<'b>) => option<'c> = (f, oa, ob) =
   Belt.Option.flatMap(oa, a => Belt.Option.map(ob, b => f(a, b)))
 
 module EvalTrace = {
-  let rec step: (Residual.t, Trace.state) => Value.t = (r, state) =>
+  let rec step: (residual, Trace.state) => value = (r, state) =>
     switch r {
     | Conjunction(r1, r2) => evalAnd(step(r1, state), step(r2, state))
     | Disjunction(r1, r2) => evalOr(step(r1, state), step(r2, state))
     | Next(f, _) => eval(f, state)
     }
 
-  let rec stop: Residual.t => option<bool> = r =>
+  let rec stop: residual => option<bool> = r =>
     switch r {
     | Conjunction(r1, r2) => map2((a, b) => a && b, stop(r1), stop(r2))
     | Disjunction(r1, r2) => map2((a, b) => a || b, stop(r1), stop(r2))
-    | Next(_, True) => Some(true)
-    | Next(_, False) => Some(false)
-    | Next(_, Demand) => None
+    | Next(_, Pure(b)) => Some(b)
+    | Next(_, Residual(_)) => None
     }
 
-  let rec loopLast: (Value.t, Trace.state) => bool = (value, last) =>
+  let rec loopLast: (value, Trace.state) => bool = (value, last) =>
     switch value {
     | Pure(r) => r
     | Residual(r) =>
@@ -105,7 +95,7 @@ module EvalTrace = {
       }
     }
 
-  let rec stepStates: (Value.t, Trace.trace) => bool = (value, trace) =>
+  let rec stepStates: (value, Trace.trace) => bool = (value, trace) =>
     switch trace {
     | list{} => raise(EmptyTrace)
     | list{last} =>

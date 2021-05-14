@@ -1,4 +1,6 @@
 type rec formula =
+  | Top
+  | Bottom
   | Atomic(char)
   | Not(formula)
   | And(formula, formula)
@@ -9,6 +11,8 @@ type rec formula =
 
 let rec print_formula: formula => string = f =>
   switch f {
+  | Top => "top"
+  | Bottom => "bottom"
   | Atomic(c) => String.make(1, c)
   | Not(p) => "not(" ++ print_formula(p) ++ ")"
   | And(p, q) => "and(" ++ print_formula(p) ++ ", " ++ print_formula(q) ++ ")"
@@ -30,6 +34,8 @@ let emptyNames: names = Belt.Set.make(~id=module(CharCmp))
 let atomicNames: formula => names = f => {
   let rec go: (names, formula) => names = (names, f) =>
     switch f {
+    | Top => emptyNames
+    | Bottom => emptyNames
     | Atomic(c) => names->Belt.Set.add(c)
     | Not(p) => go(names, p)
     | And(p, q) => Belt.Set.union(go(names, p), go(names, q))
