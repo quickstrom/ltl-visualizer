@@ -2,6 +2,11 @@ body {
     font-family: sans-serif;
     font-size: 16px;
 }
+
+table {
+    width: 100%;
+}
+
 .app {
     padding: 1rem;
     max-width: 40rem;
@@ -19,16 +24,40 @@ body {
 }
 
 .formula {
-    font-weight: 600;
+    width: 60%;
 }
 
 .states {
+    position: relative;
     list-style-type: none;
     padding: 0;
     margin: 2rem 0 1rem;
     display: flex;
+    justify-content: space-between;
+}
+.states:before {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-bottom: 2px solid lightgray;
+    content: "";
+    z-index: 0;
 }
 
+.states li {
+    position: relative;
+    z-index: 1;
+    background: #fff;
+}
+.states li:before {
+    display: inline-block;
+    /* content: "───"; */
+}
+.states li:first-child:before {
+    content: "";
+}
 .states input[type=checkbox] {
     position: relative;
 }

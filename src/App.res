@@ -20,26 +20,30 @@ module TraceVisualizer = {
       formulae,
     )
 
-    <div className="trace-visualizer">
-      <h2> {React.string("Atomic Propositions")} </h2>
+    <table className="trace-visualizer">
+      <tr key="atomic-propositions">
+        <th colSpan=2> {React.string("Atomic Propositions")} </th>
+      </tr>
       {React.array(
         Belt.Array.mapWithIndex(Belt.Set.toArray(allNames), (i, name) =>
-          <p key={string_of_int(i)}>
-            <code className="formula"> {React.string(String.make(1, name))} </code>
+          <tr key={string_of_int(i)}>
+            <td className="formula"> <code> {React.string(String.make(1, name))} </code> </td>
             <TraceStates formula=Formula.Atomic(name) trace />
-          </p>
+          </tr>
         ),
       )}
-      <h2> {React.string("Formulae")} </h2>
+      <tr key="formulae"> <th colSpan=2> {React.string("Formulae")} </th> </tr>
       {React.array(
         Belt.Array.mapWithIndex(formulae, (i, formula) =>
-          <p key={string_of_int(i)}>
-            <code className="formula"> {React.string(Formula.print_formula(formula))} </code>
-            <TraceStates formula trace />
-          </p>
+          <tr key={string_of_int(i)}>
+            <td className="formula">
+              <code> {React.string(Formula.print_formula(formula))} </code>
+            </td>
+            <td> <TraceStates formula trace /> </td>
+          </tr>
         ),
       )}
-    </div>
+    </table>
   }
 }
 
