@@ -53,7 +53,6 @@ table {
 }
 .states li:before {
     display: inline-block;
-    /* content: "───"; */
 }
 .states li:first-child:before {
     content: "";

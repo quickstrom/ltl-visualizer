@@ -15,3 +15,19 @@ let print_trace: trace => string = trace => {
 
   "[" ++ Js.Array2.joinWith(Belt.List.toArray(List.map(print_state, trace)), ", ") ++ "]"
 }
+
+let setTraceState: (bool, char, int, trace) => trace = (enabled, name, i, trace) => {
+  let modifyState = s =>
+    if enabled {
+      Belt.Set.add(s, name)
+    } else {
+      Belt.Set.remove(s, name)
+    }
+  List.mapi((i', s) =>
+    if i == i' {
+      modifyState(s)
+    } else {
+      s
+    }
+  , trace)
+}
