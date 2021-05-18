@@ -12,11 +12,35 @@ module TraceStates = {
       i,
       result,
     ) => {
-      <li key={string_of_int(i)}>
-        <input type_="checkbox" disabled={!Js.Option.isSome(onToggle)} checked=result onChange={e => onChange(i, e)} />
-      </li>
+      let id = Formula.print_formula(formula) ++ string_of_int(i)
+      <td key={string_of_int(i)} className="state">
+        <input
+          id
+          type_="checkbox"
+          disabled={!Js.Option.isSome(onToggle)}
+          checked=result
+          onChange={e => onChange(i, e)}
+        />
+        <label htmlFor=id />
+      </td>
     })
-    <ul className="states"> {React.array(states)} </ul>
+    React.array(states)
+  }
+}
+module TraceHeader = {
+  @react.component
+  let make = (~title, ~trace) => {
+    let lastIndex = List.length(trace) - 1
+    let stateHeaders = Array.mapi((i, _) => {
+      let label = if i == lastIndex {
+        React.string(string_of_int(i) ++ `..∞`)
+      } else {
+        React.int(i)
+      }
+      <th> {React.string("S")} <sub> {label} </sub> </th>
+    }, Belt.List.toArray(trace))
+
+    <tr> <th> {React.string(title)} </th> {React.array(stateHeaders)} <th /> </tr>
   }
 }
 
@@ -31,10 +55,10 @@ module TraceVisualizer = {
       formulae,
     )
 
+    let headerFills = React.array(Array.make(List.length(trace) + 1, <th />))
+
     <table className="trace-visualizer">
-      <tr key="atomic-propositions">
-        <th colSpan=2> {React.string("Atomic Propositions")} </th>
-      </tr>
+      <TraceHeader trace title="Atomic Proposition" />
       {React.array(
         Belt.Array.mapWithIndex(Belt.Set.toArray(allNames), (i, name) => {
           let onToggle: (int, bool) => unit = (stateIndex, enabled) => {
@@ -43,20 +67,27 @@ module TraceVisualizer = {
           <tr key={string_of_int(i)}>
             <td className="formula"> <code> {React.string(String.make(1, name))} </code> </td>
             <TraceStates formula=Formula.Atomic(name) trace onToggle />
+            <td className="actions" />
           </tr>
         }),
       )}
-      <tr key="formulae"> <th colSpan=2> {React.string("Formulae")} </th> </tr>
+      <TraceHeader trace title="Formula" />
       {React.array(
         Belt.Array.mapWithIndex(formulae, (i, formula) =>
           <tr key={string_of_int(i)}>
             <td className="formula">
               <code> {React.string(Formula.print_formula(formula))} </code>
             </td>
-            <td> <TraceStates formula trace /> </td>
+            <TraceStates formula trace />
+            <td className="actions"> <button> {React.string("Remove")} </button> </td>
           </tr>
         ),
       )}
+      <tr key="formulae">
+        <td>
+          <form> <input className="new-formula" placeholder="Enter a new formula..." /> </form>
+        </td>
+      </tr>
     </table>
   }
 }

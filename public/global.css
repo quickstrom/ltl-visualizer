@@ -7,6 +7,16 @@ table {
     width: 100%;
 }
 
+table th, table td {
+    padding: .75rem 0 ;
+}
+
+table th {
+    text-align: left;
+    border-bottom: 1px solid #ccc;;
+    padding-top: 1.5rem;
+}
+
 .app {
     padding: 1rem;
     max-width: 40rem;
@@ -24,50 +34,52 @@ table {
 }
 
 .formula {
-    width: 60%;
+    width: 50%;
+    padding-right: 1em;
 }
 
-.states {
-    position: relative;
-    list-style-type: none;
-    padding: 0;
-    margin: 2rem 0 1rem;
-    display: flex;
-    justify-content: space-between;
+.state {
+    width: 1%;
+    white-space: nowrap;
+    padding-left: 0;
+    padding-right: 0;
+    line-height: 1;
 }
-.states:before {
-    display: block;
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    border-bottom: 2px solid lightgray;
-    content: "";
-    z-index: 0;
+.state input[type=checkbox] {
+    display: none;
 }
 
-.states li {
-    position: relative;
-    z-index: 1;
-    background: #fff;
-}
-.states li:before {
+.state input[type=checkbox] + label {
     display: inline-block;
+    content: "";
+    width: .8em;
+    height: .8em;
+    border-radius: 100%;
+    border: 2px solid black;
+    margin-right: .2em;
 }
-.states li:first-child:before {
+.state input[type=checkbox]:checked + label {
+    background: black;
+}
+
+.state:after {
+    display: inline;
+    content: "\🠒";
+    font-size: 125%;
+    color: black;
+}
+.trace-visualizer tr :nth-last-child(2):after {
     content: "";
 }
-.states input[type=checkbox] {
-    position: relative;
+
+.actions {
+    padding-left: 1em;
+    width: 1%;
 }
-.states input[type=checkbox]:after {
-    content: " ";
-    position: absolute;
-    bottom: 100%;
-    left: 0;
-    right: 0;
-    text-align: center;
-}
-.states :last-child input[type=checkbox]:after {
-    content: "∞";
+
+button, input {
+    background: #eee;
+    border: 1px solid #aaa;
+    border-radius: 2px;
+    padding: .25em .75em;
 }
