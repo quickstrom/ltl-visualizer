@@ -2,6 +2,10 @@ let value: Dom.element => string = %raw(`
   function(obj) { return obj.value }
 `)
 
+let clear: Dom.element => unit = %raw(`
+  function(obj) { obj.value = ""; }
+`)
+
 module TraceStates = {
   @react.component
   let make = (~formula, ~trace, ~onToggle: option<(int, bool) => unit>=?) => {
@@ -54,6 +58,7 @@ module TraceVisualizer = {
     let textInput = React.useRef(Js.Nullable.null)
     let (trace, setTrace) = React.useState(_ => initialTrace)
     let (formulae, setFormulae) = React.useState(_ => initialFormulae)
+    let (errorMessage, setErrorMessage) = React.useState(_ => None)
 
     let allNames = Array.fold_left(
       (names, f) => Belt.Set.union(names, Formula.atomicNames(f)),
@@ -65,10 +70,14 @@ module TraceVisualizer = {
       ReactEvent.Form.preventDefault(event)
       // let form = ReactEvent.Form.target(event)
       switch textInput.current->Js.Nullable.toOption {
-      | Some(input) => 
+      | Some(input) =>
         switch input->value->Parser.parse {
-          | formula => setFormulae(Js.Array.concat([formula]))
-          | exception e => Js.log2("Parsing failed", e)
+        | formula => {
+            setFormulae(Js.Array.concat([formula]))
+            setErrorMessage(_ => None)
+            clear(input)
+          }
+        | exception Parser.ParseError(s) => setErrorMessage(_ => Some(s))
         }
       | None => ()
       }
@@ -103,7 +112,17 @@ module TraceVisualizer = {
       <tr key="formulae">
         <td>
           <form onSubmit=onNewFormula>
-            <input ref={ReactDOM.Ref.domRef(textInput)} className="new-formula" placeholder="Enter a new formula..." />
+            <input
+              ref={ReactDOM.Ref.domRef(textInput)}
+              className="new-formula"
+              placeholder="Enter a new formula..."
+            />
+            <p className="error-message">
+              {switch errorMessage {
+              | Some(msg) => React.string(msg)
+              | None => React.string("")
+              }}
+            </p>
           </form>
         </td>
       </tr>

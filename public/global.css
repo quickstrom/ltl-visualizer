@@ -88,3 +88,7 @@ button, input {
     border-radius: 2px;
     padding: .25em .75em;
 }
+
+.error-message {
+    color: red;
+}

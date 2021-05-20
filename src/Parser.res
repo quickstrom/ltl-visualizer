@@ -1,3 +1,5 @@
+exception ParseError(string)
+
 module Syntax = {
   let not = p => Formula.Not(p)
   let \"and" = (p, q) => Formula.And(p, q)
@@ -14,7 +16,7 @@ let atomics: array<(string, Formula.formula)> = Array.map(n => {
   (String.make(1, c), Formula.Atomic(c))
 }, Belt.Array.range(Char.code('A'), Char.code('Z')))
 
-let parse: string => Formula.formula = %raw(`
+let parseUnsafe: string => Formula.formula = %raw(`
   function(str) {
     let keys = [];
     let values = [];
@@ -26,6 +28,26 @@ let parse: string => Formula.formula = %raw(`
 
     const f = new Function(keys, "return " + str + ";");
 
-    return f.apply(null, values);
+    const formula = f.apply(null, values);
+    if (formula === null || formula === undefined) {
+      throw Error("Got null or undefined");
+    } else if (typeof formula === "object" && formula.hasOwnProperty("TAG")) {
+      return formula;
+    } else if (typeof formula === "function") {
+      throw Error(formula.name.concat(" is not applied"));
+    } else {
+      throw Error("Got ".concat(formula.toString()));
+    }
   }
 `)
+
+let parse: string => Formula.formula = s =>
+  try {
+    parseUnsafe(s)
+  } catch {
+  | Js.Exn.Error(obj) =>
+    switch Js.Exn.message(obj) {
+    | Some(m) => raise(ParseError("Parse error: " ++ m))
+    | None => raise(ParseError("Parse error"))
+    }
+  }
