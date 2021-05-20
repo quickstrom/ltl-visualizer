@@ -12518,26 +12518,14 @@ var Trace = require("./Trace.bs.js");
 
 var Parser = require("./Parser.bs.js");
 
-var formulae = [Parser.parse("or(A, and(B, next(C)))"), Parser.parse("always(A)"), Parser.parse("always(or(A, or(B, D)))"), Parser.parse("until(or(A, B), D)"), Parser.parse("always(next(A))"), Parser.parse("eventually(C)"), Parser.parse("eventually(always(C))")];
-var trace_0 = Trace.state_of([
-/* 'A' */
-65]);
+var formulae = [Parser.parse("and(A, next(or(B, C)))")];
+var trace_0 = Trace.state_of([]);
 var trace_1 = {
-  hd: Trace.state_of([
-  /* 'B' */
-  66,
-  /* 'C' */
-  67]),
+  hd: Trace.state_of([]),
   tl: {
-    hd: Trace.state_of([
-    /* 'A' */
-    65]),
+    hd: Trace.state_of([]),
     tl: {
-      hd: Trace.state_of([
-      /* 'A' */
-      65,
-      /* 'D' */
-      68]),
+      hd: Trace.state_of([]),
       tl:
       /* [] */
       0
@@ -43255,7 +43243,11 @@ function App$TraceVisualizer(Props) {
     placeholder: "Enter a new formula..."
   }), React.createElement("p", {
     className: "error-message"
-  }, errorMessage !== undefined ? errorMessage : "")));
+  }, errorMessage !== undefined ? errorMessage : ""), React.createElement("p", {
+    className: "help-message"
+  }, "Learn about the syntax in the ", React.createElement("a", {
+    href: "https://github.com/owickstrom/ltl-visualizer/blob/main/README.md#usage"
+  }, "Documentation"), ".")));
 }
 
 var TraceVisualizer = {
@@ -43317,7 +43309,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "35193" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "32849" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -103,6 +103,12 @@ button, input {
     font-size: 100%;
     margin-top: 1em;
 }
+.help-message {
+    color: #666;
+}
+.help-message a {
+    color: inherit;
+}
 .error-message {
     color: red;
 }
