@@ -4,6 +4,7 @@ module Syntax = {
   let or = (p, q) => Formula.Or(p, q)
   let next = p => Formula.Next(p)
   let always = p => Formula.Always(p)
+  let eventually = p => Formula.Eventually(p)
   let until = (p, q) => Formula.Until(p, q)
 }
 
@@ -13,7 +14,7 @@ let atomics: array<(string, Formula.formula)> = Array.map(n => {
   (String.make(1, c), Formula.Atomic(c))
 }, Belt.Array.range(Char.code('A'), Char.code('Z')))
 
-let parse = %raw(`
+let parse: string => Formula.formula = %raw(`
   function(str) {
     let keys = [];
     let values = [];

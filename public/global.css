@@ -44,6 +44,7 @@ table th {
     padding-left: 0;
     padding-right: 0;
     line-height: 1;
+    font-family: monospace;
 }
 .state input[type=checkbox] {
     display: none;
@@ -57,14 +58,18 @@ table th {
     border-radius: 100%;
     border: 2px solid black;
     margin-right: .2em;
+    cursor: pointer;
 }
 .state input[type=checkbox]:checked + label {
     background: black;
 }
+.state input[type=checkbox]:disabled + label {
+    cursor: not-allowed;
+}
 
 .state:after {
     display: inline;
-    content: "\🠒";
+    content: "\279D";
     font-size: 125%;
     color: black;
 }

@@ -1,3 +1,7 @@
+let value: Dom.element => string = %raw(`
+  function(obj) { return obj.value }
+`)
+
 module TraceStates = {
   @react.component
   let make = (~formula, ~trace, ~onToggle: option<(int, bool) => unit>=?) => {
@@ -46,8 +50,10 @@ module TraceHeader = {
 
 module TraceVisualizer = {
   @react.component
-  let make = (~initialTrace, ~formulae) => {
+  let make = (~initialTrace, ~initialFormulae) => {
+    let textInput = React.useRef(Js.Nullable.null)
     let (trace, setTrace) = React.useState(_ => initialTrace)
+    let (formulae, setFormulae) = React.useState(_ => initialFormulae)
 
     let allNames = Array.fold_left(
       (names, f) => Belt.Set.union(names, Formula.atomicNames(f)),
@@ -55,7 +61,18 @@ module TraceVisualizer = {
       formulae,
     )
 
-    let headerFills = React.array(Array.make(List.length(trace) + 1, <th />))
+    let onNewFormula = event => {
+      ReactEvent.Form.preventDefault(event)
+      // let form = ReactEvent.Form.target(event)
+      switch textInput.current->Js.Nullable.toOption {
+      | Some(input) => 
+        switch input->value->Parser.parse {
+          | formula => setFormulae(Js.Array.concat([formula]))
+          | exception e => Js.log2("Parsing failed", e)
+        }
+      | None => ()
+      }
+    }
 
     <table className="trace-visualizer">
       <TraceHeader trace title="Atomic Proposition" />
@@ -85,7 +102,9 @@ module TraceVisualizer = {
       )}
       <tr key="formulae">
         <td>
-          <form> <input className="new-formula" placeholder="Enter a new formula..." /> </form>
+          <form onSubmit=onNewFormula>
+            <input ref={ReactDOM.Ref.domRef(textInput)} className="new-formula" placeholder="Enter a new formula..." />
+          </form>
         </td>
       </tr>
     </table>
@@ -98,7 +117,7 @@ module App = {
     <div className="app">
       <header className="header">
         <h1> {React.string("Linear Temporal Logic Visualizer")} </h1>
-        <TraceVisualizer initialTrace=Demo.trace formulae=Demo.formulae />
+        <TraceVisualizer initialTrace=Demo.trace initialFormulae=Demo.formulae />
       </header>
     </div>
   }

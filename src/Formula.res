@@ -7,6 +7,7 @@ type rec formula =
   | Or(formula, formula)
   | Next(formula)
   | Always(formula)
+  | Eventually(formula)
   | Until(formula, formula)
 
 let rec print_formula: formula => string = f =>
@@ -19,6 +20,7 @@ let rec print_formula: formula => string = f =>
   | Or(p, q) => "or(" ++ print_formula(p) ++ ", " ++ print_formula(q) ++ ")"
   | Next(p) => "next(" ++ print_formula(p) ++ ")"
   | Always(p) => "always(" ++ print_formula(p) ++ ")"
+  | Eventually(p) => "eventually(" ++ print_formula(p) ++ ")"
   | Until(p, q) => "until(" ++ print_formula(p) ++ ", " ++ print_formula(q) ++ ")"
   }
 
@@ -42,6 +44,7 @@ let atomicNames: formula => names = f => {
     | Or(p, q) => Belt.Set.union(go(names, p), go(names, q))
     | Next(p) => go(names, p)
     | Always(p) => go(names, p)
+    | Eventually(p) => go(names, p)
     | Until(p, q) => Belt.Set.union(go(names, p), go(names, q))
     }
   go(emptyNames, f)
