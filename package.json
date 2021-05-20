@@ -4,6 +4,7 @@
   "scripts": {
     "build": "rescript",
     "clean": "rescript clean -with-deps",
+    "deploy": "gh-pages-deploy",
     "start": "concurrently \"parcel ./public/index.html\" \"rescript build -w\""
   },
   "keywords": [
@@ -20,5 +21,11 @@
   "devDependencies": {
     "concurrently": "^6.1.0",
     "parcel-bundler": "^1.12.5"
+  },
+  "gh-pages-deploy": {
+    "prep": [
+      "build"
+    ],
+    "noprompt": true
   }
 }
