@@ -83,50 +83,54 @@ module TraceVisualizer = {
       }
     }
 
-    <table className="trace-visualizer">
-      <TraceHeader trace title="Atomic Proposition" />
-      {React.array(
-        Belt.Array.mapWithIndex(Belt.Set.toArray(allNames), (i, name) => {
-          let onToggle: (int, bool) => unit = (stateIndex, enabled) => {
-            setTrace(Trace.setTraceState(enabled, name, stateIndex))
-          }
-          <tr key={string_of_int(i)}>
-            <td className="formula"> <code> {React.string(String.make(1, name))} </code> </td>
-            <TraceStates formula=Formula.Atomic(name) trace onToggle />
-            <td className="actions" />
-          </tr>
-        }),
-      )}
-      <TraceHeader trace title="Formula" />
-      {React.array(
-        Belt.Array.mapWithIndex(formulae, (i, formula) =>
-          <tr key={string_of_int(i)}>
-            <td className="formula">
-              <code> {React.string(Formula.print_formula(formula))} </code>
-            </td>
-            <TraceStates formula trace />
-            <td className="actions"> <button> {React.string("Remove")} </button> </td>
-          </tr>
-        ),
-      )}
-      <tr key="formulae">
-        <td>
-          <form onSubmit=onNewFormula>
-            <input
-              ref={ReactDOM.Ref.domRef(textInput)}
-              className="new-formula"
-              placeholder="Enter a new formula..."
-            />
-            <p className="error-message">
-              {switch errorMessage {
-              | Some(msg) => React.string(msg)
-              | None => React.string("")
-              }}
-            </p>
-          </form>
-        </td>
-      </tr>
-    </table>
+    let removeFormula: int => unit = i => {
+      setFormulae(fs => Js.Array.filteri((_, i') => i != i', fs))
+    }
+
+    <>
+      <table className="trace-visualizer">
+        <TraceHeader trace title="Atomic Proposition" />
+        {React.array(
+          Belt.Array.mapWithIndex(Belt.Set.toArray(allNames), (i, name) => {
+            let onToggle: (int, bool) => unit = (stateIndex, enabled) => {
+              setTrace(Trace.setTraceState(enabled, name, stateIndex))
+            }
+            <tr key={string_of_int(i)}>
+              <td className="formula"> <code> {React.string(String.make(1, name))} </code> </td>
+              <TraceStates formula=Formula.Atomic(name) trace onToggle />
+              <td className="actions" />
+            </tr>
+          }),
+        )}
+        <TraceHeader trace title="Formula" />
+        {React.array(
+          Belt.Array.mapWithIndex(formulae, (i, formula) =>
+            <tr key={string_of_int(i)}>
+              <td className="formula">
+                <code> {React.string(Formula.print_formula(formula))} </code>
+              </td>
+              <TraceStates formula trace />
+              <td className="actions">
+                <button onClick={_ => removeFormula(i)}> {React.string("Remove")} </button>
+              </td>
+            </tr>
+          ),
+        )}
+      </table>
+      <form onSubmit=onNewFormula>
+        <input
+          ref={ReactDOM.Ref.domRef(textInput)}
+          className="new-formula"
+          placeholder="Enter a new formula..."
+        />
+        <p className="error-message">
+          {switch errorMessage {
+          | Some(msg) => React.string(msg)
+          | None => React.string("")
+          }}
+        </p>
+      </form>
+    </>
   }
 }
 

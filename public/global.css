@@ -1,3 +1,10 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 body {
     font-family: sans-serif;
     font-size: 16px;
@@ -89,6 +96,13 @@ button, input {
     padding: .25em .75em;
 }
 
+.new-formula {
+    display: block;
+    width: 100%;
+    font-family: monospace;
+    font-size: 100%;
+    margin-top: 1em;
+}
 .error-message {
     color: red;
 }
