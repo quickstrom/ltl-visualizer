@@ -38,24 +38,24 @@ let negateValue: value => value = v =>
   | Pure(v) => Pure(!v)
   }
 
-let evalAnd: (Lazy.t<value>, Lazy.t<value>) => value = (p, q) =>
-  switch Lazy.force(p) {
+let evalAnd: (value, value) => value = (p, q) =>
+  switch p {
   | Pure(false) => Pure(false)
-  | Pure(true) => Lazy.force(q)
+  | Pure(true) => q
   | Residual(r1) =>
-    switch Lazy.force(q) {
+    switch q {
     | Pure(false) => Pure(false)
     | Pure(true) => Residual(r1)
     | Residual(r2) => Residual(Conjunction(r1, r2))
     }
   }
 
-let evalOr: (Lazy.t<value>, Lazy.t<value>) => value = (p, q) =>
-  switch Lazy.force(p) {
+let evalOr: (value ,value) => value = (p, q) =>
+  switch p {
   | Pure(true) => Pure(true)
-  | Pure(false) => Lazy.force(q)
+  | Pure(false) => q
   | Residual(r1) =>
-    switch Lazy.force(q) {
+    switch q {
     | Pure(true) => Pure(true)
     | Pure(false) => Residual(r1)
     | Residual(r2) => Residual(Disjunction(r1, r2))
@@ -68,8 +68,8 @@ let rec eval: (Formula.formula, Trace.state) => value = (f, state) =>
   | Bottom => Pure(true)
   | Atomic(c) => Pure(state->Belt.Set.has(c))
   | Not(p) => negateValue(eval(p, state))
-  | And(p, q) => evalAnd(lazy eval(p, state), lazy eval(q, state))
-  | Or(p, q) => evalOr(lazy eval(p, state), lazy eval(q, state))
+  | And(p, q) => evalAnd(eval(p, state), eval(q, state))
+  | Or(p, q) => evalOr(eval(p, state), eval(q, state))
   | Next(p) => Residual(Next(p, eval(p, state)))
   | Always(p) =>
     switch eval(p, state) {
@@ -102,8 +102,8 @@ let map2: (('a, 'b) => 'c, option<'a>, option<'b>) => option<'c> = (f, oa, ob) =
 module EvalTrace = {
   let rec step: (residual, Trace.state) => value = (r, state) =>
     switch r {
-    | Conjunction(r1, r2) => evalAnd(lazy step(r1, state), lazy step(r2, state))
-    | Disjunction(r1, r2) => evalOr(lazy step(r1, state), lazy step(r2, state))
+    | Conjunction(r1, r2) => evalAnd(step(r1, state), step(r2, state))
+    | Disjunction(r1, r2) => evalOr(step(r1, state), step(r2, state))
     | Next(f, _) => eval(f, state)
     }
 
