@@ -1,6 +1,8 @@
-# ReScript Project Template
+# Linear Temporal Logic Visualizer
 
-The only official ReScript starter template.
+## Usage
+
+TODO
 
 ## Installation
 
@@ -14,8 +16,6 @@ npm install
 - Clean: `npm run clean`
 - Build & watch: `npm run start`
 
-## Run
+## License
 
-```sh
-node src/Demo.bs.js
-```
+[Mozilla Public License Version 2.0](LICENSE)
