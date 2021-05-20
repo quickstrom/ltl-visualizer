@@ -26,6 +26,7 @@
     "prep": [
       "build"
     ],
-    "noprompt": true
+    "noprompt": true,
+    "staticpath": "dist"
   }
 }
