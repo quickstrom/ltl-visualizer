@@ -1,20 +1,81 @@
 # Linear Temporal Logic Visualizer
 
+This is an interactive visualizer for linear temporal logic (LTL), made as a
+companion tool for the article [Specifying State Machines with Temporal Logic
+](https://wickstrom.tech/programming/2021/05/03/specifying-state-machines-with-temporal-logic.html). Use this to play around with formulae and traces to get a better sense of how the temporal operators work.
+
 ## Usage
 
-TODO
+The rough workflow for this little application goes as follows:
 
-## Installation
+1. Add formulae (see section on [Syntax](#syntax) below)
+2. The atomic propositions in your formula are automatically shown above the formula
+3. Toggle the truth of an atomic proposition in each respective state (click the circles!)
+4. See how the truth of more complex formulae (e.g. with temporal operators) are affected when changing the atomic propositions
+5. (Repeat and learn LTL for great good!)
 
-```sh
-npm install
+**NOTE:** The last state in the trace is considered repeating forever. We
+can't really toggle an infinite number of checkboxes on a web page, but we wan't
+to mess around with infinite traces nonetheless!
+
+### Syntax
+
+The most basic syntactic construct is the atomic proposition. It's denoted by a
+single uppercase letter (A-Z), and it represents something that is true or false
+in a given state. Here's an atomic proposition:
+
+```js
+A
 ```
 
-## Build
+This application uses (abuses, really!) the JavaScript parser in the browser to
+parse formulae. Thus, we use JavaScript function application syntax to form
+complex expressions, like those with operators.
 
-- Build: `npm run build`
-- Clean: `npm run clean`
-- Build & watch: `npm run start`
+Here's the temporal operator `next` applied to an atomic proposition:
+
+```js
+next(A)
+```
+
+The logical connectives can't be `||` and `&&` like in JavaScript, so they're called `or` and `and`:
+
+```js
+or(A, B)
+and(C, D)
+```
+
+Similarly, negation (`!` in JavaScript) is called `not`:
+
+```js
+not(A)
+```
+
+The available temporal operators are:
+
+* `next`
+* `eventually`
+* `always`
+* `until`
+
+## Examples
+
+Here's a few valid formulae:
+
+```js
+A
+next(B)
+or(A, next(C))
+always(A)
+until(A, or(B, C))
+eventually(always(D))
+```
+
+## Hacking
+
+- Build: `yarn build`
+- Clean: `yarn clean`
+- Build & watch: `yarn start`
 
 ## License
 

@@ -129,6 +129,11 @@ module TraceVisualizer = {
           | None => React.string("")
           }}
         </p>
+        <p className="help-message">
+        {React.string("Learn about the syntax in the ")}
+        <a href="https://github.com/owickstrom/ltl-visualizer/blob/main/README.md#usage">{React.string("Documentation")}</a>
+        {React.string(".")}
+        </p>
       </form>
     </>
   }
