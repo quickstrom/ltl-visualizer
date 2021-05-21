@@ -6,6 +6,41 @@ let clear: Dom.element => unit = %raw(`
   function(obj) { obj.value = ""; }
 `)
 
+let joinElementsWith = (s: React.element, xs: array<React.element>) =>
+  switch Belt.Array.slice(xs, ~len=1, ~offset=0) {
+  | [x] => Array.fold_left((a, b) => <> {a} {s} {b} </>, x, Belt.Array.sliceToEnd(xs, 1))
+  | _ => <> </>
+  }
+
+let rec prettyPrint: Formula.formula => React.element = f => {
+  let literal = s => <span className="literal"> {React.string(s)} </span>
+  let atomic = c => <span className="atomic"> {React.string(String.make(1, c))} </span>
+
+  module Op = {
+    @react.component
+    let make = (~name, ~sub: array<Formula.formula>) =>
+      <span className="application">
+        <span className="operator"> {React.string(name)} </span>
+        {React.string("(")}
+        {joinElementsWith(React.string(", "), Array.map(prettyPrint, sub))}
+        {React.string(")")}
+      </span>
+  }
+
+  switch f {
+  | Top => literal("top")
+  | Bottom => literal("bottom")
+  | Atomic(c) => atomic(c)
+  | Not(p) => <Op name="not" sub={[p]} />
+  | And(p, q) => <Op name="and" sub={[p, q]} />
+  | Or(p, q) => <Op name="or" sub={[p, q]} />
+  | Next(p) => <Op name="next" sub={[p]} />
+  | Always(p) => <Op name="always" sub={[p]} />
+  | Eventually(p) => <Op name="eventually" sub={[p]} />
+  | Until(p, q) => <Op name="until" sub={[p, q]} />
+  }
+}
+
 module TraceStates = {
   @react.component
   let make = (~formula, ~trace, ~onToggle: option<(int, bool) => unit>=?) => {
@@ -96,7 +131,7 @@ module TraceVisualizer = {
               setTrace(Trace.setTraceState(enabled, name, stateIndex))
             }
             <tr key={string_of_int(i)}>
-              <td className="formula"> <code> {React.string(String.make(1, name))} </code> </td>
+              <td className="formula"> <code> {prettyPrint(Formula.Atomic(name))} </code> </td>
               <TraceStates formula=Formula.Atomic(name) trace onToggle />
               <td className="actions" />
             </tr>
@@ -106,9 +141,7 @@ module TraceVisualizer = {
         {React.array(
           Belt.Array.mapWithIndex(formulae, (i, formula) =>
             <tr key={string_of_int(i)}>
-              <td className="formula">
-                <code> {React.string(Formula.print_formula(formula))} </code>
-              </td>
+              <td className="formula"> <code> {prettyPrint(formula)} </code> </td>
               <TraceStates formula trace />
               <td className="actions">
                 <button onClick={_ => removeFormula(i)}> {React.string("Remove")} </button>
@@ -119,7 +152,11 @@ module TraceVisualizer = {
       </table>
 
     <>
-      {if Js.Array.length(formulae) > 0 { formulaTable } else { React.string("") }}
+      {if Js.Array.length(formulae) > 0 {
+        formulaTable
+      } else {
+        React.string("")
+      }}
       <form onSubmit=onNewFormula>
         <input
           ref={ReactDOM.Ref.domRef(textInput)}

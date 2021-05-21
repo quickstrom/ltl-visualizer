@@ -129,3 +129,14 @@ button, input {
 .error-message {
     color: red;
 }
+
+code .operator {
+    font-weight: bold;
+}
+code .literal {
+    color: darkcyan;
+}
+code .atomic {
+    font-style: italic;
+    color: darkorchid;
+}
