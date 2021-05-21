@@ -87,7 +87,7 @@ module TraceVisualizer = {
       setFormulae(fs => Js.Array.filteri((_, i') => i != i', fs))
     }
 
-    <>
+    let formulaTable =
       <table className="trace-visualizer">
         <TraceHeader trace title="Atomic Proposition" />
         {React.array(
@@ -117,10 +117,14 @@ module TraceVisualizer = {
           ),
         )}
       </table>
+
+    <>
+      {if Js.Array.length(formulae) > 0 { formulaTable } else { React.string("") }}
       <form onSubmit=onNewFormula>
         <input
           ref={ReactDOM.Ref.domRef(textInput)}
           className="new-formula"
+          autoFocus=true
           placeholder="Enter a new formula..."
         />
         <p className="error-message">
@@ -130,9 +134,11 @@ module TraceVisualizer = {
           }}
         </p>
         <p className="help-message">
-        {React.string("Learn about the syntax in the ")}
-        <a href="https://github.com/owickstrom/ltl-visualizer/blob/main/README.md#usage">{React.string("Documentation")}</a>
-        {React.string(".")}
+          {React.string("Learn about the syntax in the ")}
+          <a href="https://github.com/quickstrom/ltl-visualizer/blob/main/README.md#usage">
+            {React.string("Usage")}
+          </a>
+          {React.string(" documentation.")}
         </p>
       </form>
     </>
@@ -145,8 +151,13 @@ module App = {
     <div className="app">
       <header className="header">
         <h1> {React.string("Linear Temporal Logic Visualizer")} </h1>
-        <TraceVisualizer initialTrace=Demo.trace initialFormulae=Demo.formulae />
+        <a
+          className="help"
+          href="https://github.com/quickstrom/ltl-visualizer/blob/main/README.md#usage">
+          {React.string(`Usage 🤔`)}
+        </a>
       </header>
+      <main> <TraceVisualizer initialTrace=Demo.trace initialFormulae=Demo.formulae /> </main>
     </div>
   }
 }

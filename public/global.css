@@ -31,13 +31,30 @@ table th {
 }
 
 .app .header {
+    display: flex;
+    align-items: flex-end;
     margin: 2rem 0;
+    padding: 0 0 .5em;
+    border-bottom: 1px solid #ddd;
 }
 
 .app .header h1 {
-    padding: 0 0 .5em;
-    margin: 1em 0;
-    border-bottom: 1px solid #ddd;
+    flex: 1 1 auto;
+    font-size: 175%;
+    margin: 0 1em 0 0;
+}
+
+.help {
+    text-decoration: none;
+    color: inherit;
+    font-weight: bold;
+    background: #555;
+    color: white;
+    padding: .5em .75em;
+    border-radius: 2px;
+}
+.help:hover {
+    background: #777;
 }
 
 .formula {

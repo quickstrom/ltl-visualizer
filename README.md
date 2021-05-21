@@ -1,6 +1,6 @@
 # Linear Temporal Logic Visualizer
 
-✨ [owickstrom.github.io/ltl-visualizer/](https://owickstrom.github.io/ltl-visualizer/) ✨
+✨ [quickstrom.github.io/ltl-visualizer/](https://owickstrom.github.io/ltl-visualizer/) ✨
 
 This is an interactive visualizer for linear temporal logic (LTL), made as a
 companion tool for the article [Specifying State Machines with Temporal Logic
