@@ -17,7 +17,7 @@ The rough workflow for this little application goes as follows:
 5. (Repeat and learn LTL for great good!)
 
 **NOTE:** The last state in the trace is considered repeating forever. We
-can't really toggle an infinite number of checkboxes on a web page, but we wan't
+can't have an infinite number of checkboxes on a web page, but we want
 to mess around with infinite traces nonetheless!
 
 ### Syntax
@@ -59,6 +59,9 @@ The available temporal operators are:
 * `eventually`
 * `always`
 * `until`
+
+The first three take one parameter, e.g. `eventually(X)`. The `until` operator
+takes two parameters, like `until(X, Y)`.
 
 ## Examples
 
