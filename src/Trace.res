@@ -5,7 +5,7 @@ module CharCmp = Belt.Id.MakeComparable({
 
 type state = Belt.Set.t<char, CharCmp.identity>
 
-let state_of: array<char> => state = states => Belt.Set.fromArray(states, ~id=module(CharCmp))
+let stateOf: array<char> => state = states => Belt.Set.fromArray(states, ~id=module(CharCmp))
 
 type trace = list<state>
 

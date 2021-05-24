@@ -70,9 +70,10 @@ module TraceStates = {
     React.array(states)
   }
 }
+
 module TraceHeader = {
   @react.component
-  let make = (~title, ~trace) => {
+  let make = (~title, ~trace, ~children: React.element) => {
     let lastIndex = List.length(trace) - 1
     let stateHeaders = Array.mapi((i, _) => {
       let label = if i == lastIndex {
@@ -83,7 +84,11 @@ module TraceHeader = {
       <th> {React.string("S")} <sub> {label} </sub> </th>
     }, Belt.List.toArray(trace))
 
-    <tr> <th> {React.string(title)} </th> {React.array(stateHeaders)} <th /> </tr>
+    <tr>
+      <th> {React.string(title)} </th>
+      {React.array(stateHeaders)}
+      <th className="actions"> {children} </th>
+    </tr>
   }
 }
 
@@ -123,33 +128,39 @@ module TraceVisualizer = {
     }
 
     let formulaTable =
-      <table className="trace-visualizer">
-        <TraceHeader trace title="Atomic Proposition" />
-        {React.array(
-          Belt.Array.mapWithIndex(Belt.Set.toArray(allNames), (i, name) => {
-            let onToggle: (int, bool) => unit = (stateIndex, enabled) => {
-              setTrace(Trace.setTraceState(enabled, name, stateIndex))
-            }
-            <tr key={string_of_int(i)}>
-              <td className="formula"> <code> {prettyPrint(Formula.Atomic(name))} </code> </td>
-              <TraceStates formula=Formula.Atomic(name) trace onToggle />
-              <td className="actions" />
-            </tr>
-          }),
-        )}
-        <TraceHeader trace title="Formula" />
-        {React.array(
-          Belt.Array.mapWithIndex(formulae, (i, formula) =>
-            <tr key={string_of_int(i)}>
-              <td className="formula"> <code> {prettyPrint(formula)} </code> </td>
-              <TraceStates formula trace />
-              <td className="actions">
-                <button onClick={_ => removeFormula(i)}> {React.string("Remove")} </button>
-              </td>
-            </tr>
-          ),
-        )}
-      </table>
+      <div className="trace-visualizer">
+        <table>
+          <TraceHeader trace title="Atomic Proposition">
+            <button onClick={_ => setTrace(t => Belt.List.concat(t, list{Trace.stateOf([])}))}>
+              {React.string("+")}
+            </button>
+          </TraceHeader>
+          {React.array(
+            Belt.Array.mapWithIndex(Belt.Set.toArray(allNames), (i, name) => {
+              let onToggle: (int, bool) => unit = (stateIndex, enabled) => {
+                setTrace(Trace.setTraceState(enabled, name, stateIndex))
+              }
+              <tr key={string_of_int(i)}>
+                <td className="formula"> <code> {prettyPrint(Formula.Atomic(name))} </code> </td>
+                <TraceStates formula=Formula.Atomic(name) trace onToggle />
+                <td className="actions" />
+              </tr>
+            }),
+          )}
+          <TraceHeader trace title="Formula"> {<> </>} </TraceHeader>
+          {React.array(
+            Belt.Array.mapWithIndex(formulae, (i, formula) =>
+              <tr key={string_of_int(i)}>
+                <td className="formula"> <code> {prettyPrint(formula)} </code> </td>
+                <TraceStates formula trace />
+                <td className="actions">
+                  <button onClick={_ => removeFormula(i)}> {React.string("Remove")} </button>
+                </td>
+              </tr>
+            ),
+          )}
+        </table>
+      </div>
 
     <>
       {if Js.Array.length(formulae) > 0 {

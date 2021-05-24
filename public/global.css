@@ -60,6 +60,11 @@ table th {
 .formula {
     width: 50%;
     padding-right: 1em;
+    white-space: nowrap;
+}
+
+.actions {
+    text-align: right;
 }
 
 .state {
@@ -96,6 +101,10 @@ table th {
     content: "\279D";
     font-size: 125%;
     color: black;
+}
+
+.trace-visualizer {
+    overflow: auto;
 }
 .trace-visualizer tr :nth-last-child(2):after {
     content: "";
