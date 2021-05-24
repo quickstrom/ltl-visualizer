@@ -2,7 +2,7 @@
   "name": "rescript-project-template",
   "version": "0.0.1",
   "scripts": {
-    "build": "rescript && parcel build ./public/index.html --public-url ./",
+    "build": "rescript && parcel build --experimental-scope-hoisting ./public/index.html --public-url ./",
     "clean": "rescript clean -with-deps",
     "deploy": "yarn clean && yarn build && ghp-import -p -f dist",
     "start": "concurrently \"parcel ./public/index.html\" \"rescript build -w\""
