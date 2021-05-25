@@ -29,10 +29,10 @@ let rec negateResidual: residual => residual = r =>
   switch r {
   | Conjunction(p, q) => Disjunction(negateResidual(p), negateResidual(q))
   | Disjunction(p, q) => Conjunction(negateResidual(p), negateResidual(q))
-  | Next(f, r) => Next(Formula.Not(f), r)
+  | Next(f, r) => Next(Formula.Not(f), negateValue(r))
   }
 
-let negateValue: value => value = v =>
+and negateValue: value => value = v =>
   switch v {
   | Residual(r) => Residual(negateResidual(r))
   | Pure(v) => Pure(!v)
