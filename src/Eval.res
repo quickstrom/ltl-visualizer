@@ -50,7 +50,7 @@ let evalAnd: (value, value) => value = (p, q) =>
     }
   }
 
-let evalOr: (value ,value) => value = (p, q) =>
+let evalOr: (value, value) => value = (p, q) =>
   switch p {
   | Pure(true) => Pure(true)
   | Pure(false) => q
@@ -68,8 +68,8 @@ let rec eval: (Formula.formula, Trace.state) => value = (f, state) =>
   | Bottom => Pure(true)
   | Atomic(c) => Pure(state->Belt.Set.has(c))
   | Not(p) => negateValue(eval(p, state))
-  | And(p, q) => evalAnd(eval(p, state), eval(q, state))
-  | Or(p, q) => evalOr(eval(p, state), eval(q, state))
+  | And(ps) => Array.fold_left(evalAnd, Pure(true), Array.map(p => eval(p, state), ps))
+  | Or(ps) => Array.fold_left(evalOr, Pure(false), Array.map(p => eval(p, state), ps))
   | Next(p) => Residual(Next(p, eval(p, state)))
   | Always(p) =>
     switch eval(p, state) {
@@ -115,7 +115,7 @@ module EvalTrace = {
     | Next(_, Residual(r)) => stop(r)
     }
 
-  let loopLast: (value) => bool = (value) =>
+  let loopLast: value => bool = value =>
     switch value {
     | Pure(r) => r
     | Residual(r) => stop(r)

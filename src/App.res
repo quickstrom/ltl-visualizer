@@ -6,12 +6,6 @@ let clear: Dom.element => unit = %raw(`
   function(obj) { obj.value = ""; }
 `)
 
-let joinElementsWith = (s: React.element, xs: array<React.element>) =>
-  switch Belt.Array.slice(xs, ~len=1, ~offset=0) {
-  | [x] => Array.fold_left((a, b) => <> {a} {s} {b} </>, x, Belt.Array.sliceToEnd(xs, 1))
-  | _ => <> </>
-  }
-
 let rec prettyPrint: Formula.formula => React.element = f => {
   let literal = s => <span className="literal"> {React.string(s)} </span>
   let atomic = c => <span className="atomic"> {React.string(String.make(1, c))} </span>
@@ -22,7 +16,7 @@ let rec prettyPrint: Formula.formula => React.element = f => {
       <span className="application">
         <span className="operator"> {React.string(name)} </span>
         {React.string("(")}
-        {joinElementsWith(React.string(", "), Array.map(prettyPrint, sub))}
+        {Monoid.ElementJoin.joinArray(React.string(", "), Array.map(prettyPrint, sub))}
         {React.string(")")}
       </span>
   }
@@ -32,8 +26,8 @@ let rec prettyPrint: Formula.formula => React.element = f => {
   | Bottom => literal("bottom")
   | Atomic(c) => atomic(c)
   | Not(p) => <Op name="not" sub={[p]} />
-  | And(p, q) => <Op name="and" sub={[p, q]} />
-  | Or(p, q) => <Op name="or" sub={[p, q]} />
+  | And(ps) => <Op name="and" sub={ps} />
+  | Or(ps) => <Op name="or" sub={ps} />
   | Next(p) => <Op name="next" sub={[p]} />
   | Always(p) => <Op name="always" sub={[p]} />
   | Eventually(p) => <Op name="eventually" sub={[p]} />

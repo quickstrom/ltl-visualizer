@@ -1,9 +1,12 @@
 exception ParseError(string)
 
+module Internal = {
+  let \"and" = (ps) => Formula.And(ps)
+  let or = (ps) => Formula.Or(ps)
+}
+
 module Syntax = {
   let not = p => Formula.Not(p)
-  let \"and" = (p, q) => Formula.And(p, q)
-  let or = (p, q) => Formula.Or(p, q)
   let next = p => Formula.Next(p)
   let always = p => Formula.Always(p)
   let eventually = p => Formula.Eventually(p)
@@ -21,7 +24,15 @@ let parseUnsafe: string => Formula.formula = %raw(`
     let keys = [];
     let values = [];
 
-    Object.entries(Syntax).concat(atomics).forEach(([key, value]) => {
+    function and() {
+      return Internal.and(Array.from(arguments));
+    }
+
+    function or() {
+      return Internal.or(Array.from(arguments));
+    }
+
+    Object.entries(Syntax).concat([["and", and], ["or", or]]).concat(atomics).forEach(([key, value]) => {
         keys.push(key);
         values.push(value);
     });
