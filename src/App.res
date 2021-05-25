@@ -199,13 +199,17 @@ module App = {
     <div className="app">
       <header className="header">
         <h1> {React.string("Linear Temporal Logic Visualizer")} </h1>
+      </header>
+      <main> <TraceVisualizer initialTrace=Demo.trace initialFormulae=Demo.formulae /> </main>
+      <footer>
         <a
           className="help"
           href="https://github.com/quickstrom/ltl-visualizer/blob/main/README.md#usage">
-          {React.string(`Usage 🤔`)}
+          <span className="icon">{React.string(`🤔`)}</span>
+          {React.string(`Usage`)}
         </a>
-      </header>
-      <main> <TraceVisualizer initialTrace=Demo.trace initialFormulae=Demo.formulae /> </main>
+        <iframe src="https://github.com/sponsors/owickstrom/button" title="Sponsor owickstrom" height="35" width="116" id="sponsor-link"></iframe>
+      </footer>
     </div>
   }
 }
