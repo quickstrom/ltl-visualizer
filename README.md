@@ -47,6 +47,12 @@ or(A, B)
 and(C, D)
 ```
 
+Those operators are variadic, meaning that you can pass one or more arguments to them:
+
+```js
+or(A, B, C, D)
+```
+
 Similarly, negation (`!` in JavaScript) is called `not`:
 
 ```js

@@ -25,10 +25,16 @@ let parseUnsafe: string => Formula.formula = %raw(`
     let values = [];
 
     function and() {
+      if (arguments.length === 0) {
+        throw Error("and requires at least one argument");
+      }
       return Internal.and(Array.from(arguments));
     }
 
     function or() {
+      if (arguments.length === 0) {
+        throw Error("or requires at least one argument");
+      }
       return Internal.or(Array.from(arguments));
     }
 
