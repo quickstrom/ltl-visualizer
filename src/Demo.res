@@ -1,10 +1,12 @@
 let formulae: array<Formula.formula> = [
-  Parser.parse("not(and(B, next(eventually(B))))"),
-  Parser.parse("and(B, next(eventually(B)))"),
+  Parser.parse("A"),
+  Parser.parse("or(A, B)"),
+  Parser.parse("next(B)"),
+  Parser.parse("eventually(or(A, B))"),
 ]
 let trace = list{
   Trace.stateOf([]),
-  Trace.stateOf(['B']),
+  Trace.stateOf([]),
   Trace.stateOf([]),
   Trace.stateOf([]),
 }
