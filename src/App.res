@@ -28,6 +28,7 @@ let rec prettyPrint: Formula.formula => React.element = f => {
   | Not(p) => <Op name="not" sub={[p]} />
   | And(ps) => <Op name="and" sub={ps} />
   | Or(ps) => <Op name="or" sub={ps} />
+  | Implies(p, q) => <Op name="implies" sub={[p, q]} />
   | Next(p) => <Op name="next" sub={[p]} />
   | Always(p) => <Op name="always" sub={[p]} />
   | Eventually(p) => <Op name="eventually" sub={[p]} />

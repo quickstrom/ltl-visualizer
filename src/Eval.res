@@ -70,6 +70,7 @@ let rec eval: (Formula.formula, Trace.state) => value = (f, state) =>
   | Not(p) => negateValue(eval(p, state))
   | And(ps) => Array.fold_left(evalAnd, Pure(true), Array.map(p => eval(p, state), ps))
   | Or(ps) => Array.fold_left(evalOr, Pure(false), Array.map(p => eval(p, state), ps))
+  | Implies(p, q) => eval(Formula.Or([Formula.Not(p), q]), state)
   | Next(p) => Residual(Next(p, eval(p, state)))
   | Always(p) =>
     switch eval(p, state) {

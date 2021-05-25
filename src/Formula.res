@@ -5,6 +5,7 @@ type rec formula =
   | Not(formula)
   | And(array<formula>)
   | Or(array<formula>)
+  | Implies(formula, formula)
   | Next(formula)
   | Always(formula)
   | Eventually(formula)
@@ -18,6 +19,7 @@ let rec print_formula: formula => string = f =>
   | Not(p) => "not(" ++ print_formula(p) ++ ")"
   | And(ps) => "and(" ++ Monoid.StringJoin.joinArray(Monoid.String.make(", "), Belt.Array.map(ps, print_formula)) ++ ")"
   | Or(ps) => "or(" ++ Monoid.StringJoin.joinArray(Monoid.String.make(", "), Belt.Array.map(ps, print_formula)) ++ ")"
+  | Implies(p, q) => "implies(" ++ print_formula(p) ++ ", " ++ print_formula(q) ++ ")"
   | Next(p) => "next(" ++ print_formula(p) ++ ")"
   | Always(p) => "always(" ++ print_formula(p) ++ ")"
   | Eventually(p) => "eventually(" ++ print_formula(p) ++ ")"
@@ -42,6 +44,7 @@ let atomicNames: formula => names = f => {
     | Not(p) => go(names, p)
     | And(ps) => Array.fold_left((a, b) => Belt.Set.union(go(names, b), a), emptyNames, ps)
     | Or(ps) => Array.fold_left((a, b) => Belt.Set.union(go(names, b), a), emptyNames, ps)
+    | Implies(p, q) => Belt.Set.union(go(names, p), go(names, q))
     | Next(p) => go(names, p)
     | Always(p) => go(names, p)
     | Eventually(p) => go(names, p)

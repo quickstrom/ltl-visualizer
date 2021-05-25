@@ -7,6 +7,7 @@ module Internal = {
 
 module Syntax = {
   let not = p => Formula.Not(p)
+  let implies = (p, q) => Formula.Implies(p, q)
   let next = p => Formula.Next(p)
   let always = p => Formula.Always(p)
   let eventually = p => Formula.Eventually(p)

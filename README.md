@@ -59,6 +59,12 @@ Similarly, negation (`!` in JavaScript) is called `not`:
 not(A)
 ```
 
+Logical implication is called `implies`:
+
+```js
+implies(A, B)
+```
+
 The available temporal operators are:
 
 * `next`
@@ -75,6 +81,7 @@ Here's a few valid formulae:
 
 ```js
 A
+implies(A, B)
 next(B)
 or(A, next(C))
 always(A)
