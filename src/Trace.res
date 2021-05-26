@@ -7,6 +7,22 @@ type state = Belt.Set.t<char, CharCmp.identity>
 
 let stateOf: array<char> => state = states => Belt.Set.fromArray(states, ~id=module(CharCmp))
 
+let stateOfString: string => state = s => {
+  let state = ref(Belt.Set.make(~id=module(CharCmp)))
+  String.iter(c => {
+    state.contents = state.contents->Belt.Set.add(c)
+  }, s)
+  state.contents
+}
+
+let stateToString: state => string = s => {
+  let str = ref("")
+  Belt.Set.forEach(s, c => {
+    str.contents = str.contents ++ String.make(1, c)
+  })
+  str.contents
+}
+
 type trace = list<state>
 
 let print_trace: trace => string = trace => {

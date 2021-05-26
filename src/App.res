@@ -122,11 +122,35 @@ module TraceVisualizer = {
       setFormulae(fs => Js.Array.filteri((_, i') => i != i', fs))
     }
 
+    let share: (~title: string, ~url: string) => unit = %raw(`
+      function (title, url) {
+        if (Navigator.share) {
+          Navigator.share({ title, url });
+        } else if (navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url);
+          alert("URL copied!");
+        }
+      }
+    `)
+
     let formulaTable =
       <div className="trace-visualizer">
+        <nav>
+          <button
+            className="btn btn-primary"
+            onClick={_ => {
+              let url = Query.renderURL({"formulae": Some(formulae), "trace": Some(trace)})
+              share(~title="Linear Temporal Logic Visualizer", ~url)
+              ()
+            }}>
+            {React.string("Share")}
+          </button>
+        </nav>
         <table>
           <TraceHeader trace title="Atomic Proposition">
-            <button onClick={_ => setTrace(t => Belt.List.concat(t, list{Trace.stateOf([])}))}>
+            <button
+              className="btn btn-small"
+              onClick={_ => setTrace(t => Belt.List.concat(t, list{Trace.stateOf([])}))}>
               {React.string("+")}
             </button>
           </TraceHeader>
@@ -149,7 +173,9 @@ module TraceVisualizer = {
                 <td className="formula"> <code> {prettyPrint(formula)} </code> </td>
                 <TraceStates formula trace />
                 <td className="actions">
-                  <button onClick={_ => removeFormula(i)}> {React.string("Remove")} </button>
+                  <button className="btn btn-small" onClick={_ => removeFormula(i)}>
+                    {React.string("Remove")}
+                  </button>
                 </td>
               </tr>
             ),
@@ -191,19 +217,32 @@ module TraceVisualizer = {
 module App = {
   @react.component
   let make = () => {
+    let content = switch (
+      Js.Option.getWithDefault(Demo.formulae, Query.get()["formulae"]),
+      Js.Option.getWithDefault(Demo.trace, Query.get()["trace"]),
+    ) {
+    | exception Parser.ParseError(s) => <p className="error-message"> {React.string(s)} </p>
+    | (initialFormulae, initialTrace) => <TraceVisualizer initialTrace initialFormulae />
+    }
+
     <div className="app">
       <header className="header">
         <h1> {React.string("Linear Temporal Logic Visualizer")} </h1>
       </header>
-      <main> <TraceVisualizer initialTrace=Demo.trace initialFormulae=Demo.formulae /> </main>
+      <main> {content} </main>
       <footer>
         <a
-          className="help"
+          className="btn help"
           href="https://github.com/quickstrom/ltl-visualizer/blob/main/README.md#usage">
-          <span className="icon">{React.string(`🤔`)}</span>
-          {React.string(`Usage`)}
+          <span className="icon"> {React.string(`🤔`)} </span> {React.string(`Usage`)}
         </a>
-        <iframe src="https://github.com/sponsors/owickstrom/button" title="Sponsor owickstrom" height="35" width="116" id="sponsor-link"></iframe>
+        <iframe
+          src="https://github.com/sponsors/owickstrom/button"
+          title="Sponsor owickstrom"
+          height="35"
+          width="116"
+          id="sponsor-link"
+        />
       </footer>
     </div>
   }

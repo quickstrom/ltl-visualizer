@@ -27,10 +27,21 @@ iframe {
     border: 0;
 }
 
+html, body, #app-root, .app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    flex: 1 1 auto;
+}
+
 .app {
     padding: 1rem;
     max-width: 40rem;
     margin: 0 auto;
+}
+
+.app main {
+    flex: 1 1 auto;
 }
 
 .app .header {
@@ -52,11 +63,8 @@ iframe {
     align-items: flex-start;
     justify-content: flex-end;
 }
-
-.help {
-    flex: 0 0 auto;
+.btn {
     text-decoration: none;
-    color: inherit;
     background: #fafbfc;
     color: #24292e;
     border-radius: 6px;
@@ -69,11 +77,28 @@ iframe {
     appearance: none;
     margin: 0 5px 0 0;
 }
-.help .icon {
+.btn:hover {
+    background: #f3f4f6;
+}
+.btn-small {
+    padding: 2px 8px;
+    font-size: 12px;
+    line-height: 1;
+}
+.btn .icon {
     margin-right: 8px;
 }
-.help:hover {
-    background: #f3f4f6;
+.btn-primary {
+    background: #15f;
+    color: #fff;
+}
+.btn-primary:hover {
+    background: #26f;
+}
+
+
+.help {
+    flex: 0 0 auto;
 }
 
 .formula {
@@ -123,6 +148,9 @@ iframe {
 
 .trace-visualizer {
     overflow: auto;
+}
+.trace-visualizer nav {
+    text-align: right;
 }
 .trace-visualizer tr :nth-last-child(2):after {
     content: "";
