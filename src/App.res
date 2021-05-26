@@ -87,6 +87,71 @@ module TraceHeader = {
   }
 }
 
+module SyntaxHelp = {
+  type entry = {concept: string, description: string, examples: array<Formula.formula>}
+
+  let entries: array<entry> = [
+    {
+      concept: "Atomic propositions",
+      description: "Symbolic names (uppercase letters) that are either true or false in a state.",
+      examples: [Formula.Atomic('A'), Formula.Atomic('B')],
+    },
+    {
+      concept: "Logical connectives",
+      description: "Operators from propositional logic.",
+      examples: [
+        Formula.Not(Formula.Atomic('A')),
+        Formula.And([Formula.Atomic('A'), Formula.Atomic('B')]),
+        Formula.Or([Formula.Atomic('A'), Formula.Atomic('B'), Formula.Atomic('C')]),
+        Formula.Implies(Formula.Atomic('A'), Formula.Atomic('B')),
+      ],
+    },
+    {
+      concept: "Temporal operators",
+      description: "Operators that deal with time.",
+      examples: [
+        Formula.Next(Formula.Atomic('A')),
+        Formula.Eventually(Formula.Atomic('B')),
+        Formula.Always(Formula.Atomic('C')),
+        Formula.Until(Formula.Atomic('A'), Formula.Atomic('B')),
+      ],
+    },
+  ]
+
+  @react.component
+  let make = () => {
+    let renderEntry = entry => {
+      <tr>
+        <td className="concept"> {React.string(entry.concept)} </td>
+        <td> {React.string(entry.description)} </td>
+        <td className="examples">
+          <ul>
+            {React.array(
+              Array.map(
+                example => <li> <code> {prettyPrint(example)} </code> </li>,
+                entry.examples,
+              ),
+            )}
+          </ul>
+        </td>
+      </tr>
+    }
+    <details>
+      <summary> {React.string("Syntax Cheatsheet")} </summary>
+      <table>
+        <thead>
+          <tr>
+            <th> {React.string("Concept")} </th>
+            <th> {React.string("Description")} </th>
+            <th> {React.string("Examples")} </th>
+          </tr>
+        </thead>
+        {React.array(Array.map(renderEntry, entries))}
+      </table>
+    </details>
+  }
+}
+
 module TraceVisualizer = {
   @react.component
   let make = (~initialTrace, ~initialFormulae) => {
@@ -127,8 +192,13 @@ module TraceVisualizer = {
         if (Navigator.share) {
           Navigator.share({ title, url });
         } else if (navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url);
-          alert("URL copied!");
+          navigator.clipboard.writeText(url).then(() => {
+            alert("URL copied!");
+          }).catch(err => {
+            console.error("Copy-to-clipboard with sharable URL failed:", err);
+            alert("Couldn't copy the sharable URL to clipboard. Navigating to the URL as a fallback...");
+            window.location = url;
+          });
         }
       }
     `)
@@ -141,7 +211,6 @@ module TraceVisualizer = {
             onClick={_ => {
               let url = Query.renderURL({"formulae": Some(formulae), "trace": Some(trace)})
               share(~title="Linear Temporal Logic Visualizer", ~url)
-              ()
             }}>
             {React.string("Share")}
           </button>
@@ -202,13 +271,7 @@ module TraceVisualizer = {
           | None => React.string("")
           }}
         </p>
-        <p className="help-message">
-          {React.string("Learn about the syntax in the ")}
-          <a href="https://github.com/quickstrom/ltl-visualizer/blob/main/README.md#usage">
-            {React.string("Usage")}
-          </a>
-          {React.string(" documentation.")}
-        </p>
+        <SyntaxHelp />
       </form>
     </>
   }
