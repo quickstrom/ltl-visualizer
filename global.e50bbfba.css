@@ -7,11 +7,10 @@ html {
   box-sizing: inherit;
 }
 
-body {
-}
-
 table {
     width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
 }
 
 table th, table td {
@@ -30,14 +29,14 @@ iframe {
 html, body, #app-root, .app {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     min-height: 100%;
     flex: 1 1 auto;
 }
 
 .app {
     padding: 1rem;
-    max-width: 40rem;
-    margin: 0 auto;
+    align-items: stretch;
 }
 
 .app main {
@@ -62,6 +61,7 @@ html, body, #app-root, .app {
     display: flex;
     align-items: flex-start;
     justify-content: flex-end;
+    margin-top: 2rem;
 }
 .btn {
     text-decoration: none;
@@ -175,12 +175,6 @@ button, input {
     font-size: 100%;
     margin-top: 1em;
 }
-.help-message {
-    color: #666;
-}
-.help-message a {
-    color: inherit;
-}
 .error-message {
     color: red;
 }
@@ -205,5 +199,20 @@ code .application:before {
     margin-left: -1em;
 }
 
+details {
+    background: #f7f7f7;
+    padding: 1em;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    color: #888;
+}
+
+details summary {
+    font-weight: bold;
+}
+
+.concept {
+    font-style: italic;
+}
 
 /*# sourceMappingURL=/global.e50bbfba.css.map */

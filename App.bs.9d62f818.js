@@ -43527,6 +43527,185 @@ function App$TraceHeader(Props) {
 var TraceHeader = {
   make: App$TraceHeader
 };
+var entries = [{
+  concept: "Atomic propositions",
+  description: "Symbolic names (uppercase letters) that are either true or false in a state.",
+  examples: [{
+    TAG:
+    /* Atomic */
+    0,
+    _0:
+    /* 'A' */
+    65
+  }, {
+    TAG:
+    /* Atomic */
+    0,
+    _0:
+    /* 'B' */
+    66
+  }]
+}, {
+  concept: "Logical connectives",
+  description: "Operators from propositional logic.",
+  examples: [{
+    TAG:
+    /* Not */
+    1,
+    _0: {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'A' */
+      65
+    }
+  }, {
+    TAG:
+    /* And */
+    2,
+    _0: [{
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'A' */
+      65
+    }, {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'B' */
+      66
+    }]
+  }, {
+    TAG:
+    /* Or */
+    3,
+    _0: [{
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'A' */
+      65
+    }, {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'B' */
+      66
+    }, {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'C' */
+      67
+    }]
+  }, {
+    TAG:
+    /* Implies */
+    4,
+    _0: {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'A' */
+      65
+    },
+    _1: {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'B' */
+      66
+    }
+  }]
+}, {
+  concept: "Temporal operators",
+  description: "Operators that deal with time.",
+  examples: [{
+    TAG:
+    /* Next */
+    5,
+    _0: {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'A' */
+      65
+    }
+  }, {
+    TAG:
+    /* Eventually */
+    7,
+    _0: {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'B' */
+      66
+    }
+  }, {
+    TAG:
+    /* Always */
+    6,
+    _0: {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'C' */
+      67
+    }
+  }, {
+    TAG:
+    /* Until */
+    8,
+    _0: {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'A' */
+      65
+    },
+    _1: {
+      TAG:
+      /* Atomic */
+      0,
+      _0:
+      /* 'B' */
+      66
+    }
+  }]
+}];
+
+function App$SyntaxHelp(Props) {
+  var renderEntry = function renderEntry(entry) {
+    return React.createElement("tr", undefined, React.createElement("td", {
+      className: "concept"
+    }, entry.concept), React.createElement("td", undefined, entry.description), React.createElement("td", {
+      className: "examples"
+    }, React.createElement("ul", undefined, $$Array.map(function (example) {
+      return React.createElement("li", undefined, React.createElement("code", undefined, prettyPrint(example)));
+    }, entry.examples))));
+  };
+
+  return React.createElement("details", undefined, React.createElement("summary", undefined, "Syntax Cheatsheet"), React.createElement("table", undefined, React.createElement("thead", undefined, React.createElement("tr", undefined, React.createElement("th", undefined, "Concept"), React.createElement("th", undefined, "Description"), React.createElement("th", undefined, "Examples"))), $$Array.map(renderEntry, entries)));
+}
+
+var SyntaxHelp = {
+  entries: entries,
+  make: App$SyntaxHelp
+};
 
 function App$TraceVisualizer(Props) {
   var initialTrace = Props.initialTrace;
@@ -43593,10 +43772,10 @@ function App$TraceVisualizer(Props) {
       });
     } else if (navigator.clipboard.writeText) {
       navigator.clipboard.writeText(url).then(function () {
-        throw Error("oops");
         alert("URL copied!");
       }).catch(function (err) {
         console.error("Copy-to-clipboard with sharable URL failed:", err);
+        alert("Couldn't copy the sharable URL to clipboard. Navigating to the URL as a fallback...");
         window.location = url;
       });
     }
@@ -43691,11 +43870,7 @@ function App$TraceVisualizer(Props) {
     placeholder: "Enter a new formula..."
   }), React.createElement("p", {
     className: "error-message"
-  }, errorMessage !== undefined ? errorMessage : ""), React.createElement("p", {
-    className: "help-message"
-  }, "Learn about the syntax in the ", React.createElement("a", {
-    href: "https://github.com/quickstrom/ltl-visualizer/blob/main/README.md#usage"
-  }, "Usage"), " documentation.")));
+  }, errorMessage !== undefined ? errorMessage : ""), React.createElement(App$SyntaxHelp, {})));
 }
 
 var TraceVisualizer = {
@@ -43763,6 +43938,7 @@ exports.clear = clear;
 exports.prettyPrint = prettyPrint;
 exports.TraceStates = TraceStates;
 exports.TraceHeader = TraceHeader;
+exports.SyntaxHelp = SyntaxHelp;
 exports.TraceVisualizer = TraceVisualizer;
 exports.App = App;
 /* root Not a pure module */
@@ -43794,7 +43970,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39355" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34543" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
