@@ -75,6 +75,15 @@ The available temporal operators are:
 The first three take one parameter, e.g. `eventually(X)`. The `until` operator
 takes two parameters, like `until(X, Y)`.
 
+### Sharing
+
+The workspace state can be shared by clicking the blue "Share" button. On
+devices supporting native sharing, you'll get that dialog. As a fallback, the
+URL is copied to the clipboard.
+
+As an example, here's a sharable URL:
+https://quickstrom.github.io/ltl-visualizer/?formulae=L%7CI%7CT&trace=%7C%7C%7C
+
 ## Examples
 
 Here's a few valid formulae:

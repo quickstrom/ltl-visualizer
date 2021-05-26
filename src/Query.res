@@ -36,6 +36,6 @@ let renderURL: query => string = %raw(`
       var [formula, trace] = render(query)
       searchParams.set("formulae", formula)
       searchParams.set("trace", trace)
-      return window.location.origin + "?" + searchParams.toString();
+      return window.location.origin + window.location.pathname + "?" + searchParams.toString();
     }
   `)
